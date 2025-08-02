@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
-
-import os
+from django.conf import settings
 
 # Update this path to match your current project structure
 DATA_DIR = r'C:\Users\Aarmaan Choudhary\Desktop\Options-Dash\12Dec-Nifty'

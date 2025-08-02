@@ -185,17 +185,12 @@ function loadGreeks() {
                 const traces = greeks.map(greek => ({
                     x: points.map(p => p.datetime),
                     y: points.map(p => p[greek]),
-                    mode: 'lines+markers',
+                    mode: 'lines',
                     name: greek.toUpperCase(),
                     line: { 
                         color: colors[greek], 
                         width: 3,
                         shape: 'spline'
-                    },
-                    marker: { 
-                        size: 6,
-                        color: colors[greek],
-                        line: { color: 'white', width: 2 }
                     }
                 }));
 
