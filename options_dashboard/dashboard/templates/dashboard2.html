@@ -3,62 +3,261 @@
 <head>
     <title>Options Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .navbar-custom {
+            background: var(--primary-gradient);
+        }
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        .btn-custom {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+    </style>
 </head>
-<body class="p-4">
-    <h2>Options Dashboard (Expiry: {{ expiry }})</h2>
 
-    <ul class="nav nav-tabs">
-        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#greeks">Greek Calculator</a></li>
-    </ul>
-
-    <div class="tab-content mt-3">
-        <div class="tab-pane fade show active" id="greeks">
-            <div class="mb-3">
-                <input id="rval" type="number" placeholder="Risk Free Rate" class="form-control" value="0.15"/>
-                <button onclick="loadGreeks()" class="btn btn-primary mt-2">Plot Greeks</button>
-            </div>
-            <div id="greekCharts" class="row"></div>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4 shadow-lg py-3">
+      <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-chart-line me-3 text-white" style="font-size: 2rem;"></i>
+          <span class="navbar-brand mb-0 h1 display-5 fw-bold text-white" style="font-size:2.2rem;">Options Dashboard</span>
+          <span class="badge bg-white text-primary ms-3 fs-6 px-3 py-2 rounded-pill">
+            <i class="fas fa-calendar-alt me-1"></i>Expiry: <span class="fw-semibold">{{ expiry }}</span>
+          </span>
         </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-11">
+          <div class="card card-custom mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link active rounded-pill px-4" data-bs-toggle="tab" href="#greeks">
+                      <i class="fas fa-calculator me-2"></i>Greek Calculator
+                    </a>
+                  </li>
+                </ul>
+                <div class="d-flex align-items-center text-muted">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <small>Real-time options Greeks analysis</small>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-4">
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="greeks">
+                  <div class="row mb-4 align-items-end">
+                    <div class="col-md-3">
+                      <label for="rval" class="form-label fw-semibold text-dark">
+                        <i class="fas fa-percentage me-2 text-primary"></i>Risk Free Rate (%)
+                      </label>
+                      <input id="rval" type="number" step="0.01" min="0" max="1" placeholder="0.15" class="form-control form-control-lg" value="0.15"/>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label fw-semibold text-dark">
+                        <i class="fas fa-filter me-2 text-primary"></i>Filter Options
+                      </label>
+                      <select id="optionFilter" class="form-select form-select-lg">
+                        <option value="all">All Options</option>
+                        <option value="call">Calls Only</option>
+                        <option value="put">Puts Only</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2">
+                      <button onclick="loadGreeks()" class="btn btn-custom btn-lg w-100 text-white fw-semibold">
+                        <i class="fas fa-chart-bar me-2"></i>Plot Greeks
+                      </button>
+                    </div>
+                    <div class="col-md-2">
+                      <button onclick="clearCharts()" class="btn btn-outline-secondary btn-lg w-100">
+                        <i class="fas fa-trash me-2"></i>Clear
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="row mb-3">
+                    <div class="col-12">
+                      <div class="alert alert-info border-0 rounded-3" style="background: linear-gradient(45deg, #e3f2fd, #f3e5f5);">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-lightbulb text-warning me-3" style="font-size: 1.5rem;"></i>
+                          <div>
+                            <strong>Quick Guide:</strong> Delta measures price sensitivity, Gamma shows delta's rate of change, 
+                            Theta indicates time decay, Vega shows volatility sensitivity, and Rho measures interest rate sensitivity.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="spinner" class="text-center my-5" style="display:none;">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-3 text-primary fw-semibold">Loading data, please wait...</div>
+                  </div>
+                  <div id="errorMsg" class="alert alert-danger border-0 rounded-3" style="display:none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                  </div>
+                  <div id="greekCharts" class="row"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
 <script>
+function clearCharts() {
+    document.getElementById('greekCharts').innerHTML = '';
+}
+
 function loadGreeks() {
     const r = document.getElementById('rval').value;
-    fetch(`/api/greeks/?r=${r}`)
-        .then(res => res.json())
-        .then(res => {
-            const container = document.getElementById('greekCharts');
-            container.innerHTML = '';
+    const filter = document.getElementById('optionFilter').value;
+    const spinner = document.getElementById('spinner');
+    const errorMsg = document.getElementById('errorMsg');
+    const container = document.getElementById('greekCharts');
+    
+    spinner.style.display = '';
+    errorMsg.style.display = 'none';
+    container.innerHTML = '';
 
+    fetch(`/api/greeks/?r=${r}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+        })
+        .then(res => {
+            spinner.style.display = 'none';
             const data = res.data;
             const greeks = ['delta', 'vega', 'theta'];
+            const colors = {
+                'delta': '#ff6b6b',
+                'vega': '#4ecdc4', 
+                'theta': '#45b7d1'
+            };
 
             for (const [label, points] of Object.entries(data)) {
                 const [strike, opt_type] = label.split('_');
-
+                
+                // Apply filter
+                if (filter !== 'all' && opt_type !== filter) continue;
+                
                 const traces = greeks.map(greek => ({
                     x: points.map(p => p.datetime),
                     y: points.map(p => p[greek]),
                     mode: 'lines+markers',
-                    name: greek.toUpperCase()
+                    name: greek.toUpperCase(),
+                    line: { 
+                        color: colors[greek], 
+                        width: 3,
+                        shape: 'spline'
+                    },
+                    marker: { 
+                        size: 6,
+                        color: colors[greek],
+                        line: { color: 'white', width: 2 }
+                    }
                 }));
 
                 const layout = {
-                    title: `Strike: ${strike} | Type: ${opt_type.toUpperCase()}`,
-                    xaxis: { title: 'Time' },
-                    yaxis: { title: 'Greek Value' },
-                    height: 350
+                    title: {
+                        text: `<b>Strike: ${strike} | Type: ${opt_type.toUpperCase()}</b>`,
+                        font: { size: 18, color: '#2c3e50' }
+                    },
+                    xaxis: { 
+                        title: 'Time',
+                        titlefont: { size: 14, color: '#7f8c8d' },
+                        gridcolor: '#ecf0f1'
+                    },
+                    yaxis: { 
+                        title: 'Greek Value',
+                        titlefont: { size: 14, color: '#7f8c8d' },
+                        gridcolor: '#ecf0f1'
+                    },
+                    height: 400,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    legend: {
+                        orientation: 'h',
+                        x: 0.5,
+                        xanchor: 'center',
+                        y: -0.2
+                    },
+                    margin: { t: 50, l: 60, r: 30, b: 80 }
                 };
 
                 const col = document.createElement('div');
-                col.className = 'col-12 mb-4';
+                col.className = 'col-xl-6 col-lg-12 mb-4';
+                
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                col.appendChild(chartContainer);
                 container.appendChild(col);
-                Plotly.newPlot(col, traces, layout);
+                
+                Plotly.newPlot(chartContainer, traces, layout, {responsive: true});
             }
+            
+            if (container.children.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-chart-line text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3">No data found for the selected filter</h4>
+                        <p class="text-muted">Try selecting a different option type or check your data files.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(err => {
+            spinner.style.display = 'none';
+            errorMsg.style.display = '';
+            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load data. Please try again later.';
         });
 }
+
+// Auto-load on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadGreeks();
+});
 </script>
 </body>
 </html>
