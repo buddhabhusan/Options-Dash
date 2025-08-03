@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('api/greeks/', views.get_greeks, name='get_greeks'),
     path('api/ivs/', views.get_ivs, name='get_ivs'),
+    path('api/iv/', views.get_iv_timeseries, name='get_iv_timeseries'),
 ]

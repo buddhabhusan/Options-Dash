@@ -74,10 +74,15 @@
                       <i class="fas fa-calculator me-2"></i>Greek Calculator
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link rounded-pill px-4 ms-2" data-bs-toggle="tab" href="#iv">
+                      <i class="fas fa-chart-area me-2"></i>Implied Volatility
+                    </a>
+                  </li>
                 </ul>
                 <div class="d-flex align-items-center text-muted">
                   <i class="fas fa-info-circle me-2"></i>
-                  <small>Real-time options Greeks analysis</small>
+                  <small>Real-time options analysis</small>
                 </div>
               </div>
             </div>
@@ -113,6 +118,40 @@
                     </div>
                   </div>
                   
+                  <div class="row mb-4">    
+                    <div class="col-12">
+                      <div class="card border-0" style="background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
+                        <div class="card-body p-3">
+                          <div class="row align-items-center">
+                            <div class="col-md-2">
+                              <label class="form-label fw-semibold text-dark mb-0">
+                                <i class="fas fa-calendar-range me-2 text-primary"></i>Date Range
+                              </label>
+                            </div>
+                            <div class="col-md-3">
+                              <label for="startDate" class="form-label text-muted small">Start Date</label>
+                              <input type="date" id="startDate" class="form-control" value="2023-12-28"/>
+                            </div>
+                            <div class="col-md-3">
+                              <label for="endDate" class="form-label text-muted small">End Date</label>
+                              <input type="date" id="endDate" class="form-control" value="2023-12-28"/>
+                            </div>
+                            <div class="col-md-2">
+                              <button onclick="applyDateFilter()" class="btn btn-outline-primary w-100 mt-3 mt-md-4">
+                                <i class="fas fa-filter me-2"></i>Apply
+                              </button>
+                            </div>
+                            <div class="col-md-2">
+                              <button onclick="resetDateFilter()" class="btn btn-outline-secondary w-100 mt-3 mt-md-4">
+                                <i class="fas fa-undo me-2"></i>Reset
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div class="row mb-3">
                     <div class="col-12">
                       <div class="alert alert-info border-0 rounded-3" style="background: linear-gradient(45deg, #e3f2fd, #f3e5f5);">
@@ -138,16 +177,142 @@
                   </div>
                   <div id="greekCharts" class="row"></div>
                 </div>
+                
+                <!-- New Implied Volatility Tab -->
+                <div class="tab-pane fade" id="iv">
+                  <div class="row mb-4 align-items-end">
+                    <div class="col-md-3">
+                      <label for="ivRval" class="form-label fw-semibold text-dark">
+                        <i class="fas fa-percentage me-2 text-primary"></i>Risk Free Rate (%)
+                      </label>
+                      <input id="ivRval" type="number" step="0.01" min="0" max="1" placeholder="0.15" class="form-control form-control-lg" value="0.15"/>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label fw-semibold text-dark">
+                        <i class="fas fa-filter me-2 text-primary"></i>Filter Options
+                      </label>
+                      <select id="ivOptionFilter" class="form-select form-select-lg">
+                        <option value="all">All Options</option>
+                        <option value="call">Calls Only</option>
+                        <option value="put">Puts Only</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2">
+                      <button onclick="loadIV()" class="btn btn-custom btn-lg w-100 text-white fw-semibold">
+                        <i class="fas fa-chart-area me-2"></i>Plot IV
+                      </button>
+                    </div>
+                    <div class="col-md-2">
+                      <button onclick="clearIVCharts()" class="btn btn-outline-secondary btn-lg w-100">
+                        <i class="fas fa-trash me-2"></i>Clear
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="row mb-4">
+                    <div class="col-12">
+                      <div class="card border-0" style="background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
+                        <div class="card-body p-3">
+                          <div class="row align-items-center">
+                            <div class="col-md-2">
+                              <label class="form-label fw-semibold text-dark mb-0">
+                                <i class="fas fa-calendar-range me-2 text-primary"></i>Date Range
+                              </label>
+                            </div>
+                            <div class="col-md-3">
+                              <label for="ivStartDate" class="form-label text-muted small">Start Date</label>
+                              <input type="date" id="ivStartDate" class="form-control" value="2023-12-01"/>
+                            </div>
+                            <div class="col-md-3">
+                              <label for="ivEndDate" class="form-label text-muted small">End Date</label>
+                              <input type="date" id="ivEndDate" class="form-control" value="2023-12-28"/>
+                            </div>
+                            <div class="col-md-2">
+                              <button onclick="applyIVDateFilter()" class="btn btn-outline-primary w-100 mt-3 mt-md-4">
+                                <i class="fas fa-filter me-2"></i>Apply
+                              </button>
+                            </div>
+                            <div class="col-md-2">
+                              <button onclick="resetIVDateFilter()" class="btn btn-outline-secondary w-100 mt-3 mt-md-4">
+                                <i class="fas fa-undo me-2"></i>Reset
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row mb-3">
+                    <div class="col-12">
+                      <div class="alert alert-info border-0 rounded-3" style="background: linear-gradient(45deg, #e8f5e8, #f0f8ff);">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-info-circle text-info me-3" style="font-size: 1.5rem;"></i>
+                          <div>
+                            <strong>Implied Volatility Guide:</strong> IV represents the market's expectation of future price volatility. 
+                            Higher IV indicates greater expected price movement. IV generally increases with market uncertainty and decreases as expiration approaches.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="ivSpinner" class="text-center my-5" style="display:none;">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-3 text-primary fw-semibold">Calculating implied volatility...</div>
+                  </div>
+                  <div id="ivErrorMsg" class="alert alert-danger border-0 rounded-3" style="display:none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                  </div>
+                  <div id="ivCharts" class="row"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    
 
 <script>
 function clearCharts() {
     document.getElementById('greekCharts').innerHTML = '';
+}
+
+function applyDateFilter() {
+    loadGreeks();
+}
+
+function resetDateFilter() {
+    document.getElementById('startDate').value = '2023-12-28';
+    document.getElementById('endDate').value = '2023-12-28';
+    loadGreeks();
+}
+
+function filterDataByDate(data) {
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    
+    // Set time to cover full day range
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+    
+    const filteredData = {};
+    
+    for (const [label, points] of Object.entries(data)) {
+        const filteredPoints = points.filter(point => {
+            const pointDate = new Date(point.datetime);
+            return pointDate >= startDate && pointDate <= endDate;
+        });
+        
+        if (filteredPoints.length > 0) {
+            filteredData[label] = filteredPoints;
+        }
+    }
+    
+    return filteredData;
 }
 
 function loadGreeks() {
@@ -168,7 +333,10 @@ function loadGreeks() {
         })
         .then(res => {
             spinner.style.display = 'none';
-            const data = res.data;
+            
+            // Apply date filtering
+            const filteredData = filterDataByDate(res.data || res);
+            
             const greeks = ['delta', 'vega', 'theta'];
             const colors = {
                 'delta': '#ff6b6b',
@@ -176,11 +344,14 @@ function loadGreeks() {
                 'theta': '#45b7d1'
             };
 
-            for (const [label, points] of Object.entries(data)) {
+            let chartCount = 0;
+            for (const [label, points] of Object.entries(filteredData)) {
                 const [strike, opt_type] = label.split('_');
                 
-                // Apply filter
+                // Apply option type filter
                 if (filter !== 'all' && opt_type !== filter) continue;
+                
+                if (points.length === 0) continue; // Skip if no data points
                 
                 const traces = greeks.map(greek => ({
                     x: points.map(p => p.datetime),
@@ -196,7 +367,7 @@ function loadGreeks() {
 
                 const layout = {
                     title: {
-                        text: `<b>Strike: ${strike} | Type: ${opt_type.toUpperCase()}</b>`,
+                        text: `<b>Strike: ${strike} | Type: ${opt_type.toUpperCase()}</b><br><sub>Data Points: ${points.length}</sub>`,
                         font: { size: 18, color: '#2c3e50' }
                     },
                     xaxis: { 
@@ -218,7 +389,7 @@ function loadGreeks() {
                         xanchor: 'center',
                         y: -0.2
                     },
-                    margin: { t: 50, l: 60, r: 30, b: 80 }
+                    margin: { t: 80, l: 60, r: 30, b: 80 }
                 };
 
                 const col = document.createElement('div');
@@ -230,14 +401,18 @@ function loadGreeks() {
                 container.appendChild(col);
                 
                 Plotly.newPlot(chartContainer, traces, layout, {responsive: true});
+                chartCount++;
             }
             
-            if (container.children.length === 0) {
+            if (chartCount === 0) {
                 container.innerHTML = `
                     <div class="col-12 text-center py-5">
-                        <i class="fas fa-chart-line text-muted" style="font-size: 4rem;"></i>
-                        <h4 class="text-muted mt-3">No data found for the selected filter</h4>
-                        <p class="text-muted">Try selecting a different option type or check your data files.</p>
+                        <i class="fas fa-calendar-times text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3">No data found for the selected date range</h4>
+                        <p class="text-muted">Try adjusting the date range or check your data files for available dates.</p>
+                        <button onclick="resetDateFilter()" class="btn btn-primary mt-3">
+                            <i class="fas fa-undo me-2"></i>Reset Date Filter
+                        </button>
                     </div>
                 `;
             }
@@ -246,6 +421,151 @@ function loadGreeks() {
             spinner.style.display = 'none';
             errorMsg.style.display = '';
             errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load data. Please try again later.';
+        });
+}
+
+// Implied Volatility Functions
+function clearIVCharts() {
+    document.getElementById('ivCharts').innerHTML = '';
+}
+
+function applyIVDateFilter() {
+    loadIV();
+}
+
+function resetIVDateFilter() {
+    document.getElementById('ivStartDate').value = '2023-12-01';
+    document.getElementById('ivEndDate').value = '2023-12-28';
+    loadIV();
+}
+
+function filterIVDataByDate(data) {
+    const startDate = new Date(document.getElementById('ivStartDate').value);
+    const endDate = new Date(document.getElementById('ivEndDate').value);
+    
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+    
+    const filteredData = {};
+    
+    for (const [label, points] of Object.entries(data)) {
+        const filteredPoints = points.filter(point => {
+            const pointDate = new Date(point.datetime);
+            return pointDate >= startDate && pointDate <= endDate;
+        });
+        
+        if (filteredPoints.length > 0) {
+            filteredData[label] = filteredPoints;
+        }
+    }
+    
+    return filteredData;
+}
+
+function loadIV() {
+    const r = document.getElementById('ivRval').value;
+    const filter = document.getElementById('ivOptionFilter').value;
+    const spinner = document.getElementById('ivSpinner');
+    const errorMsg = document.getElementById('ivErrorMsg');
+    const container = document.getElementById('ivCharts');
+    
+    spinner.style.display = '';
+    errorMsg.style.display = 'none';
+    container.innerHTML = '';
+
+    fetch(`/api/iv/?r=${r}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+        })
+        .then(res => {
+            spinner.style.display = 'none';
+            
+            // Apply date filtering
+            const filteredData = filterIVDataByDate(res.data || res);
+            
+            let chartCount = 0;
+            for (const [label, points] of Object.entries(filteredData)) {
+                const [strike, opt_type] = label.split('_');
+                
+                // Apply option type filter
+                if (filter !== 'all' && opt_type !== filter) continue;
+                
+                if (points.length === 0) continue;
+                
+                const trace = {
+                    x: points.map(p => p.datetime),
+                    y: points.map(p => p.iv),
+                    mode: 'lines',
+                    name: `${opt_type.toUpperCase()} ${strike}`,
+                    line: { 
+                        color: opt_type === 'call' ? '#e74c3c' : '#3498db', 
+                        width: 3,
+                        shape: 'spline'
+                    },
+                    hovertemplate: '<b>%{fullData.name}</b><br>' +
+                                   'Time: %{x}<br>' +
+                                   'IV: %{y:.2%}<br>' +
+                                   '<extra></extra>'
+                };
+
+                const layout = {
+                    title: {
+                        text: `<b>Implied Volatility - Strike: ${strike} (${opt_type.toUpperCase()})</b><br><sub>Data Points: ${points.length}</sub>`,
+                        font: { size: 18, color: '#2c3e50' }
+                    },
+                    xaxis: { 
+                        title: 'Time',
+                        titlefont: { size: 14, color: '#7f8c8d' },
+                        gridcolor: '#ecf0f1'
+                    },
+                    yaxis: { 
+                        title: 'Implied Volatility (%)',
+                        titlefont: { size: 14, color: '#7f8c8d' },
+                        gridcolor: '#ecf0f1',
+                        tickformat: '.1%'
+                    },
+                    height: 400,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    legend: {
+                        orientation: 'h',
+                        x: 0.5,
+                        xanchor: 'center',
+                        y: -0.2
+                    },
+                    margin: { t: 80, l: 60, r: 30, b: 80 }
+                };
+
+                const col = document.createElement('div');
+                col.className = 'col-xl-6 col-lg-12 mb-4';
+                
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                col.appendChild(chartContainer);
+                container.appendChild(col);
+                
+                Plotly.newPlot(chartContainer, [trace], layout, {responsive: true});
+                chartCount++;
+            }
+            
+            if (chartCount === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-chart-area text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mt-3">No IV data found for the selected criteria</h4>
+                        <p class="text-muted">Try adjusting the date range or option filter.</p>
+                        <button onclick="resetIVDateFilter()" class="btn btn-primary mt-3">
+                            <i class="fas fa-undo me-2"></i>Reset Filters
+                        </button>
+                    </div>
+                `;
+            }
+        })
+        .catch(err => {
+            spinner.style.display = 'none';
+            errorMsg.style.display = '';
+            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load IV data. Please try again later.';
         });
 }
 
