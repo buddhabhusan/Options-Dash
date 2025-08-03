@@ -315,6 +315,47 @@ function filterDataByDate(data) {
     return filteredData;
 }
 
+function filterMarketHours(data) {
+    // Handle different data structures - if it's already an array, process directly
+    if (Array.isArray(data)) {
+        return data.filter(point => {
+            const time = new Date(point.datetime);
+            const hours = time.getHours();
+            const minutes = time.getMinutes();
+            const timeInMinutes = hours * 60 + minutes;
+            
+            // Market hours: 9:30 AM to 3:30 PM (570 to 930 minutes)
+            return timeInMinutes >= 570 && timeInMinutes <= 930;
+        });
+    }
+    
+    // Handle object structure (for Greeks data)
+    const filteredData = {};
+    
+    for (const [label, points] of Object.entries(data)) {
+        if (!Array.isArray(points)) {
+            console.warn('Expected array for points, got:', typeof points, points);
+            continue;
+        }
+        
+        const marketHoursPoints = points.filter(point => {
+            const time = new Date(point.datetime);
+            const hours = time.getHours();
+            const minutes = time.getMinutes();
+            const timeInMinutes = hours * 60 + minutes;
+            
+            // Market hours: 9:30 AM to 3:30 PM (570 to 930 minutes)
+            return timeInMinutes >= 570 && timeInMinutes <= 930;
+        });
+        
+        if (marketHoursPoints.length > 0) {
+            filteredData[label] = marketHoursPoints;
+        }
+    }
+    
+    return filteredData;
+}
+
 function loadGreeks() {
     const r = document.getElementById('rval').value;
     const filter = document.getElementById('optionFilter').value;
@@ -334,8 +375,9 @@ function loadGreeks() {
         .then(res => {
             spinner.style.display = 'none';
             
-            // Apply date filtering
-            const filteredData = filterDataByDate(res.data || res);
+            // Apply date filtering first, then market hours filtering
+            let filteredData = filterDataByDate(res.data || res);
+            filteredData = filterMarketHours(filteredData);
             
             const greeks = ['delta', 'vega', 'theta'];
             const colors = {
@@ -367,7 +409,7 @@ function loadGreeks() {
 
                 const layout = {
                     title: {
-                        text: `<b>Strike: ${strike} | Type: ${opt_type.toUpperCase()}</b><br><sub>Data Points: ${points.length}</sub>`,
+                        text: `<b>Strike: ${strike} | Type: ${opt_type.toUpperCase()}</b>`,
                         font: { size: 18, color: '#2c3e50' }
                     },
                     xaxis: { 
@@ -480,9 +522,20 @@ function loadIV() {
         })
         .then(res => {
             spinner.style.display = 'none';
+            console.log('IV API response:', res);
             
-            // Apply date filtering
-            const filteredData = filterIVDataByDate(res.data || res);
+            // Apply date filtering first, then market hours filtering
+            let filteredData = filterIVDataByDate(res.data || res);
+            console.log('After date filtering:', Object.keys(filteredData).length, 'files');
+            
+            filteredData = Object.fromEntries(
+                Object.entries(filteredData).map(([label, points]) => {
+                    // Apply market hours filtering to each array of points
+                    const filteredPoints = filterMarketHours(points);
+                    return [label, filteredPoints];
+                })
+            );
+            console.log('After market hours filtering:', Object.keys(filteredData).length, 'files');
             
             let chartCount = 0;
             for (const [label, points] of Object.entries(filteredData)) {
@@ -511,7 +564,7 @@ function loadIV() {
 
                 const layout = {
                     title: {
-                        text: `<b>Implied Volatility - Strike: ${strike} (${opt_type.toUpperCase()})</b><br><sub>Data Points: ${points.length}</sub>`,
+                        text: `<b>Implied Volatility - Strike: ${strike} (${opt_type.toUpperCase()})</b>`,
                         font: { size: 18, color: '#2c3e50' }
                     },
                     xaxis: { 
@@ -565,7 +618,8 @@ function loadIV() {
         .catch(err => {
             spinner.style.display = 'none';
             errorMsg.style.display = '';
-            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load IV data. Please try again later.';
+            console.error('IV loading error:', err);
+            errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load IV data: ' + err.message + '. Please check the browser console for details.';
         });
 }
 
