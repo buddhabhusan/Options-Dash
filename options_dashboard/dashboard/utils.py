@@ -1,9 +1,12 @@
 import os
 from datetime import datetime
+from django.conf import settings
 
-# CHANGE THESE
-DATA_DIR = r"D:\Pallav\Projects\Options Fiesta\12Dec-Nifty"
-SPOT_CSV = r"D:\Pallav\Projects\Options Fiesta\nifty_underlying.csv"
+# Update this path to match your current project structure
+DATA_DIR = r'C:\Users\Aarmaan Choudhary\Desktop\Options-Dash\12Dec-Nifty'
+SPOT_CSV = r'C:\Users\Aarmaan Choudhary\Desktop\Options-Dash\nifty_underlying.csv'
+
+# ...existing code...
 
 def list_option_files():
     files = []
