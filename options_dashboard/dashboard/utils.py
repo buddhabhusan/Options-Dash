@@ -5,7 +5,6 @@ from django.conf import settings
 # Update this path to match your current project structure
 DATA_DIR = r'C:\Users\krish\Options-Dash\12Dec-Nifty'
 SPOT_CSV = r'C:\Users\krish\Options-Dash\nifty_underlying.csv'
-
 # ...existing code...
 
 def list_option_files():
