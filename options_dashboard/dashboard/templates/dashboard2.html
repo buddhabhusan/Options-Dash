@@ -79,6 +79,11 @@
                       <i class="fas fa-chart-area me-2"></i>Implied Volatility
                     </a>
                   </li>
+                  <li class="nav-item">
+                      <a class="nav-link rounded-pill px-4 ms-2" data-bs-toggle="tab" href="#backtest">
+                          <i class="fas fa-cogs me-2"></i>Backtesting
+                      </a>
+                  </li>
                 </ul>
                 <div class="d-flex align-items-center text-muted">
                   <i class="fas fa-info-circle me-2"></i>
@@ -207,8 +212,7 @@
                         <i class="fas fa-trash me-2"></i>Clear
                       </button>
                     </div>
-                  </div>
-                  
+                  </div>                  
                   <div class="row mb-4">
                     <div class="col-12">
                       <div class="card border-0" style="background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
@@ -267,6 +271,70 @@
                     <i class="fas fa-exclamation-triangle me-2"></i>
                   </div>
                   <div id="ivCharts" class="row"></div>
+                </div>
+                
+
+                <!-- New Backtesting Tab -->
+                <div class="tab-pane fade" id="backtest">
+                  <div class="row mb-4 align-items-end">
+                    <!-- Delta/Vega Neutral Definitions -->
+                    <p class="text-muted mb-2">
+                      <strong>Delta Neutral:</strong> Position is initially unaffected by small changes in the price of the underlying.<br>
+                      <strong>Vega Neutral:</strong> Position is unaffected by changes in implied volatility.
+                    </p>
+                    
+                    <!-- Strategy Selection + Info -->
+                    <div class="row g-3">
+                      <!-- Strategy Dropdown -->
+                      <div class="col-md-4">
+                        <label for="strategySelect" class="form-label fw-semibold text-dark">
+                          <i class="fas fa-cogs me-2 text-primary"></i>Select Strategy
+                        </label>
+                        <select id="strategySelect" class="form-select form-select-lg">
+                          <option value="" disabled selected>Select a strategy</option>
+                          <option value="straddle">Straddle</option>
+                          <option value="butterfly">Butterfly</option>
+                        </select>
+                      </div>
+                    
+                      <!-- Strategy Info Box (Full Width Below) -->
+                      <div class="col-12" id="strategyInfoBox">
+                        <div class="alert alert-secondary mt-2" id="strategyDescription">
+                          <strong>Strategy Info:</strong> Please select a strategy to see the description.
+                        </div>
+                      </div>
+                    
+                      <!-- Buttons -->
+                      <div class="col-md-2">
+                        <button onclick="runBacktest()" class="btn btn-success btn-lg w-100 text-white fw-semibold">
+                          <i class="fas fa-play me-2"></i>Run Backtest
+                        </button>
+                      </div>
+                      <div class="col-md-2">
+                        <button onclick="clearBacktestResult()" class="btn btn-outline-secondary btn-lg w-100">
+                          <i class="fas fa-trash me-2"></i>Clear
+                        </button>
+                      </div>
+                    </div>
+
+                  <!-- New Quick Guide: Backtesting -->
+                    <div class="row mb-3">
+                      <div class="col-12">
+                        <div class="alert alert-info border-0 rounded-3" style="background: linear-gradient(45deg, #e3f2fd, #f3e5f5);">
+                          <div class="d-flex align-items-center">
+                            <i class="fas fa-chart-line text-primary me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                              <strong>Backtesting Guide:</strong> Backtesting simulates trading strategies on historical data to estimate performance before risking real capital. It helps refine parameters, understand risks, and evaluate profitability over time.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+                
+                  <!-- Results section -->
+                  <div id="backtestResult" class="mt-4"></div>
                 </div>
               </div>
             </div>
@@ -622,6 +690,103 @@ function loadIV() {
             errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Failed to load IV data: ' + err.message + '. Please check the browser console for details.';
         });
 }
+const strategyDescriptions = {
+  straddle: `
+    <strong>Straddle:</strong> A <em>delta-neutral</em> options strategy involving buying both a call and a put option with the same strike price and expiry.<br>
+    <ul>
+      <li>Profits from large price movements in either direction.</li>
+      <li><strong>Delta Neutral:</strong> Initially, the net delta is close to zero, meaning the position is not sensitive to small price movements.</li>
+      <li><strong>Not Vega Neutral:</strong> Gains if implied volatility increases, since both options benefit from volatility.</li>
+    </ul>
+  `,
+  strangle: `
+    <strong>Strangle:</strong> A variation of the straddle, where you buy an out-of-the-money call and put (different strike prices).<br>
+    <ul>
+      <li>Cheaper than a straddle but needs a bigger move to be profitable.</li>
+      <li><strong>Delta Neutral:</strong> Like a straddle, initial net delta is close to zero.</li>
+      <li><strong>Not Vega Neutral:</strong> Benefits from an increase in implied volatility.</li>
+    </ul>
+  `,
+  butterfly: `
+    <strong>Butterfly Spread:</strong> A non-directional strategy combining bull and bear spreads (typically 3 options).<br>
+    <ul>
+      <li>Profits when the underlying stays close to the middle strike.</li>
+      <li><strong>Not Delta Neutral:</strong> The position can be delta-neutral only near the middle strike, but this varies over time.</li>
+      <li><strong>Not Vega Neutral:</strong> Typically loses value as volatility increases.</li>
+    </ul>
+  `
+};
+
+function runBacktest() {
+  const strategy = document.getElementById("strategySelect").value;
+
+  fetch(`/api/backtest?strategy=${strategy}`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      const result = data.result;
+
+      const message = result.message || "No message";
+      const totalTrades = result.total_trades ?? "N/A";
+      const wins = result.wins ?? "N/A";
+      const winRate = result.win_rate ?? "N/A";
+      const finalCapital = result.final_capital ?? "N/A";
+      const pnl = result.total_pnl ?? "N/A";
+      const currency = result.currency || "";
+      const maxDrawdown = result.max_drawdown ?? "N/A";
+      const sharpe = result.annualized_sharpe_ratio ?? "N/A";
+
+      document.getElementById("backtestResult").innerHTML = `
+        <div class="alert alert-info">
+          <h5>Backtest Results</h5>
+          <p><strong>Strategy:</strong> ${data.strategy}</p>
+          <p><strong>Message:</strong> ${message}</p>
+          <p><strong>Total Trades:</strong> ${totalTrades}</p>
+          <p><strong>Wins:</strong> ${wins}</p>
+          <p><strong>Win Rate:</strong> ${winRate}</p>
+          <p><strong>Final Capital:</strong> ${finalCapital} ${currency}</p>
+          <p><strong>Total P&L:</strong> ${pnl} ${currency}</p>
+          <p><strong>Max Drawdown:</strong> ${maxDrawdown}</p>
+          <p><strong>Annualized Sharpe Ratio:</strong> ${sharpe}</p>
+        </div>
+      `;
+
+      // Show graph if available
+      if (result.graph_base64) {
+        const img = new Image();
+        img.src = 'data:image/png;base64,' + result.graph_base64;
+        img.alt = 'Backtest Graph';
+        img.style.maxWidth = '100%';
+        document.getElementById("backtestResult").appendChild(img);
+      }
+    })
+    .catch(error => {
+      document.getElementById("backtestResult").innerHTML = `
+        <div class="alert alert-danger">Error: ${error.message}</div>
+      `;
+    });
+}
+
+
+
+function clearBacktestResult() {
+  document.getElementById("backtestResult").innerHTML = '';
+}
+
+document.getElementById("strategySelect").addEventListener("change", function () {
+  const selected = this.value;
+  const descriptionBox = document.getElementById("strategyDescription");
+
+  if (strategyDescriptions[selected]) {
+    descriptionBox.innerHTML = strategyDescriptions[selected];
+  } else {
+    descriptionBox.innerHTML = "<strong>Strategy Info:</strong> Please select a valid strategy.";
+  }
+});
 
 // Auto-load on page load
 document.addEventListener('DOMContentLoaded', function() {

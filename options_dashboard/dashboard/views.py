@@ -1,10 +1,14 @@
 import pandas as pd
 from datetime import datetime
+import base64
+from io import BytesIO
 from django.shortcuts import render
 from django.http import JsonResponse
 from .utils import list_option_files, SPOT_CSV
 from .greeks import compute_greeks
 from .iv import implied_volatility
+from .backtest import run_straddle_backtest, run_strangle_backtest, run_butterfly_backtest  # if in separate file
+
 
 def dashboard(request):
     files = list_option_files()
@@ -161,3 +165,24 @@ def get_iv_timeseries(request):
     except Exception as e:
         print(f"Error in get_iv_timeseries: {e}")
         return JsonResponse({'error': str(e)}, status=500)
+ 
+def get_backtest(request):
+    strategy = request.GET.get('strategy', '').lower()
+
+    if strategy == 'straddle':
+        summary, graph = run_straddle_backtest()
+    elif strategy == 'butterfly':
+        summary, graph = run_butterfly_backtest()
+    else:
+        return JsonResponse({'error': 'Invalid strategy selected'}, status=400)
+    if graph:
+        buffered = BytesIO()
+        graph.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        summary['graph_base64'] = img_str
+    else:
+        summary['graph_base64'] = None
+    return JsonResponse({
+        'strategy': strategy,
+        'result': summary,
+    })

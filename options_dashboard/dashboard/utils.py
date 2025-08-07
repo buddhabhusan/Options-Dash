@@ -3,8 +3,8 @@ from datetime import datetime
 from django.conf import settings
 
 # Update this path to match your current project structure
-DATA_DIR = r'C:\Users\Aarmaan Choudhary\Desktop\Options-Dash\12Dec-Nifty'
-SPOT_CSV = r'C:\Users\Aarmaan Choudhary\Desktop\Options-Dash\nifty_underlying.csv'
+DATA_DIR = r'C:\Users\ankit\OneDrive\Desktop\options_fiesta\Options-Dash\12Dec-Nifty'
+SPOT_CSV = r'C:\Users\ankit\OneDrive\Desktop\options_fiesta\Options-Dash\nifty_underlying.csv'
 
 # ...existing code...
 
