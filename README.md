@@ -9,7 +9,7 @@
 > It provides tools to calculate **Implied Volatility (IV)**, compute **Options Greeks**, and backtest popular strategies.  
 
 ---
-## ⚙️ Installation
+## Installation
 
 ### **Prerequisites**
 - Python **3.9+**
@@ -105,14 +105,7 @@ Implemented using **NumPy** & **SciPy**.
 
 | Dashboard View | IV Calculator | Backtesting Results |
 |----------------|--------------|---------------------|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![IV](docs/screenshots/iv.png) | ![Backtest](docs/screenshots/backtest.png) |
-
----
-
-## 🎥 Quick Start Demo
-
-![Quick Start GIF](docs/quickstart.gif)  
-_A quick walkthrough of Options Dash in action._
+| ![Dashboard](docs/screenshots/d.png) | ![IV](docs/screenshots/iv.png) | ![Backtest](docs/screenshots/bt.png) |
 
 ---
 
@@ -132,5 +125,6 @@ _A quick walkthrough of Options Dash in action._
 This project is licensed under the terms in the [LICENSE](LICENSE) file.
 
 ---
+
 
 
