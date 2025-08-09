@@ -6,9 +6,8 @@
 ![License](https://img.shields.io/github/license/amanu242006/Options-Dash)
 
 > **Options Dash** is a **web-based analytics dashboard** for options traders, analysts, and researchers.  
-> It provides tools to calculate **Implied Volatility (IV)**, compute **Options Greeks**, and backtest popular strategies.  
+> It provides tools to calculate **Implied Volatility (IV)**, compute **Options Greeks**, and backtest popular strategies.
 
----
 ## Installation
 
 ### **Prerequisites**
@@ -32,7 +31,6 @@ python options_dashboard/manage.py runserver
 Visit in your browser:  
 **http://127.0.0.1:8000/**
 
----
 ## 🚀 Features
 
 ### **1. Implied Volatility (IV) Calculator**
@@ -63,8 +61,6 @@ Calculates:
   - Annualized Sharpe ratio  
   - Optional performance graphs  
 
----
-
 ## 📊 Example Results
 
 | Strategy  | Trades | Wins | Win Rate | Final Capital | Total P&L | Max Drawdown | Sharpe Ratio |
@@ -72,8 +68,6 @@ Calculates:
 | Straddle  | 11     | 8    | 72.73%   | 108,372.50    | 8,372.50  | -2.45%       | 121.79       |
 | Butterfly | 5      | 4    | 80%      | 146,000.00    | 46,000.00 | -0.34%       | 116.04       |
 | Strangle  | 9      | 6    | 66%      | 123,018.00    | 23,018.00 | -1.84%       | 119.64       |
-
----
 
 ## 🛠 How It Works
 
@@ -98,7 +92,6 @@ Implemented using **NumPy** & **SciPy**.
 - Performance metrics stored in dictionaries  
 - Graphs optionally loaded via **PIL**  
 
----
 
 
 ## 🖼 Screenshots
@@ -107,7 +100,6 @@ Implemented using **NumPy** & **SciPy**.
 |----------------|--------------|---------------------|
 | ![Dashboard](docs/screenshots/d.png) | ![IV](docs/screenshots/iv.png) | ![Backtest](docs/screenshots/bt.png) |
 
----
 
 ## 🛠 Troubleshooting
 
@@ -119,12 +111,12 @@ Implemented using **NumPy** & **SciPy**.
 - Verify the data source/API is active  
 - Open browser console (F12) and inspect logs  
 
----
 
 ## 📜 License
 This project is licensed under the terms in the [LICENSE](LICENSE) file.
 
 ---
+
 
 
 
