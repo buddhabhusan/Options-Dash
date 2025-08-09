@@ -26,7 +26,7 @@ cd Options-Dash
 pip install -r requirements.txt
 
 # Run the development server
-python manage.py runserver
+python options_dashboard/manage.py runserver
 ```
 
 Visit in your browser:  
@@ -132,4 +132,5 @@ _A quick walkthrough of Options Dash in action._
 This project is licensed under the terms in the [LICENSE](LICENSE) file.
 
 ---
+
 
