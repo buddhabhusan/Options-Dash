@@ -9,7 +9,30 @@
 > It provides tools to calculate **Implied Volatility (IV)**, compute **Options Greeks**, and backtest popular strategies.  
 
 ---
+## ⚙️ Installation
 
+### **Prerequisites**
+- Python **3.9+**
+- `pip`
+- `git`
+
+### **Setup**
+```bash
+# Clone the repository
+git clone https://github.com/amanu242006/Options-Dash.git
+cd Options-Dash
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the development server
+python manage.py runserver
+```
+
+Visit in your browser:  
+**http://127.0.0.1:8000/**
+
+---
 ## 🚀 Features
 
 ### **1. Implied Volatility (IV) Calculator**
@@ -77,30 +100,6 @@ Implemented using **NumPy** & **SciPy**.
 
 ---
 
-## ⚙️ Installation
-
-### **Prerequisites**
-- Python **3.9+**
-- `pip`
-- `git`
-
-### **Setup**
-```bash
-# Clone the repository
-git clone https://github.com/amanu242006/Options-Dash.git
-cd Options-Dash
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the development server
-python manage.py runserver
-```
-
-Visit in your browser:  
-**http://127.0.0.1:8000/**
-
----
 
 ## 🖼 Screenshots
 
@@ -133,3 +132,4 @@ _A quick walkthrough of Options Dash in action._
 This project is licensed under the terms in the [LICENSE](LICENSE) file.
 
 ---
+
