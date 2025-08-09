@@ -5,6 +5,14 @@ from dotenv import load_dotenv
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# This points to: Options-Dash (parent of BASE_DIR)
+PROJECT_ROOT = BASE_DIR.parent
+
+# Path to the '12Dec-Nifty' folder
+DATA_DIR = PROJECT_ROOT / "12Dec-Nifty"
+DATA_DIR.mkdir(exist_ok=True)  # Ensure folder exists
+
+
 # Load environment variables
 load_dotenv(BASE_DIR / '.env')
 
