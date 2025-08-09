@@ -1,4 +1,4 @@
-# 📈 Options Dash
+# Options Dash
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Django](https://img.shields.io/badge/Django-Backend-green)
@@ -31,7 +31,7 @@ python options_dashboard/manage.py runserver
 Visit in your browser:  
 **http://127.0.0.1:8000/**
 
-## 🚀 Features
+## Features
 
 ### **1. Implied Volatility (IV) Calculator**
 - **Inputs**:  
@@ -61,7 +61,7 @@ Calculates:
   - Annualized Sharpe ratio  
   - Optional performance graphs  
 
-## 📊 Example Results
+## Example Results
 
 | Strategy  | Trades | Wins | Win Rate | Final Capital | Total P&L | Max Drawdown | Sharpe Ratio |
 |-----------|--------|------|----------|--------------:|----------:|-------------:|-------------:|
@@ -94,14 +94,14 @@ Implemented using **NumPy** & **SciPy**.
 
 
 
-## 🖼 Screenshots
+## Screenshots
 
 | Dashboard View | IV Calculator | Backtesting Results |
 |----------------|--------------|---------------------|
 | ![Dashboard](docs/screenshots/d.png) | ![IV](docs/screenshots/iv.png) | ![Backtest](docs/screenshots/bt.png) |
 
 
-## 🛠 Troubleshooting
+## Troubleshooting
 
 **Error:**  
 `Failed to load IV data: Network response was not ok.`  
@@ -112,10 +112,11 @@ Implemented using **NumPy** & **SciPy**.
 - Open browser console (F12) and inspect logs  
 
 
-## 📜 License
+## License
 This project is licensed under the terms in the [LICENSE](LICENSE) file.
 
 ---
+
 
 
 
